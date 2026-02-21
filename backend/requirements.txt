@@ -1,9 +1,7 @@
-# SoloOS Backend — Agentic OS
+# SoloOS Backend — Cursor API only
 fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
-anthropic>=0.18.0
 langgraph>=0.0.40
-langchain-anthropic>=0.0.6
 langchain-core>=0.2.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0

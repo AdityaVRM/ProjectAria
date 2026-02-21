@@ -5,7 +5,7 @@ Multi-Agent Orchestration Platform for Solopreneurs. ARIA (Adaptive Resource & I
 ## Stack
 
 - **Orchestration**: LangGraph (Python)
-- **LLM**: Claude (Anthropic API)
+- **LLM**: Cursor Cloud Agents API
 - **Backend**: FastAPI
 - **Frontend**: Next.js 14 + TypeScript
 - **Memory**: In-memory / SQLite (upgrade to Pinecone + PostgreSQL for production)
@@ -17,7 +17,7 @@ Multi-Agent Orchestration Platform for Solopreneurs. ARIA (Adaptive Resource & I
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-cp .env.example .env   # then set CURSOR_COMPOSER_1_5_API_KEY in .env
+cp .env.example .env   # then set CURSOR_COMPOSER_1_5_API_KEY and CURSOR_REPO in .env
 .venv/bin/uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Frontend (separate terminal)

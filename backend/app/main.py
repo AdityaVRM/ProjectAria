@@ -13,7 +13,6 @@ from app.memory import get_memory_store, memory_agent_get_snapshot, memory_agent
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
-    # Shutdown: close DB pools etc. if needed
 
 
 app = FastAPI(
@@ -25,7 +24,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,9 +54,15 @@ def chat(req: ChatRequest) -> dict:
         )
         return {"response": response_text, "user_id": req.user_id}
     except ValueError as e:
-        if "API key" in str(e) or "CURSOR_COMPOSER" in str(e):
-            raise HTTPException(status_code=503, detail="LLM not configured")
-        raise HTTPException(status_code=400, detail=str(e))
+        err = str(e)
+        if "API key" in err or "authentication" in err.lower():
+            raise HTTPException(
+                status_code=503,
+                detail="Cursor API key not configured. Set CURSOR_COMPOSER_1_5_API_KEY in backend/.env",
+            )
+        raise HTTPException(status_code=400, detail=err)
+    except TimeoutError as e:
+        raise HTTPException(status_code=504, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
