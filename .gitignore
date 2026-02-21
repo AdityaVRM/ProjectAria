@@ -1,0 +1,38 @@
+# Env and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+.npm
+.yarn/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs and DB (local dev)
+*.log
+*.sqlite
+*.db
+
+# Cursor / project
+.cursor/
