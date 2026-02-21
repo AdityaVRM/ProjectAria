@@ -60,3 +60,4 @@ Set `CURSOR_COMPOSER_1_5_API_KEY` in `backend/.env` (or `ANTHROPIC_API_KEY` as f
 ## License
 
 Confidential — February 2026.
+# ProjectAria
