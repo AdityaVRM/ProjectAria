@@ -55,14 +55,12 @@ def chat(req: ChatRequest) -> dict:
         return {"response": response_text, "user_id": req.user_id}
     except ValueError as e:
         err = str(e)
-        if "API key" in err or "authentication" in err.lower():
+        if "API key" in err or "GEMINI" in err:
             raise HTTPException(
                 status_code=503,
-                detail="Cursor API key not configured. Set CURSOR_COMPOSER_1_5_API_KEY in backend/.env",
+                detail="Gemini API key not configured. Set GEMINI_API_KEY in backend/.env",
             )
         raise HTTPException(status_code=400, detail=err)
-    except TimeoutError as e:
-        raise HTTPException(status_code=504, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
