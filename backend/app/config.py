@@ -5,9 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # Prefer Cursor Composer 1.5 API key; fallback to Anthropic key
     cursor_composer_api_key: str = Field(default="", validation_alias="CURSOR_COMPOSER_1_5_API_KEY")
-    anthropic_api_key: str = ""
     environment: str = "development"
     memory_backend: str = "memory"
     database_url: str = "sqlite+aiosqlite:///./solos_memory.db"

@@ -10,11 +10,9 @@ from app.config import get_settings
 
 def _client() -> Anthropic:
     settings = get_settings()
-    api_key = (settings.cursor_composer_api_key or settings.anthropic_api_key or "").strip()
+    api_key = (settings.cursor_composer_api_key or "").strip()
     if not api_key:
-        raise ValueError(
-            "No LLM API key set. Set CURSOR_COMPOSER_1_5_API_KEY (or ANTHROPIC_API_KEY) in .env"
-        )
+        raise ValueError("No LLM API key set. Set CURSOR_COMPOSER_1_5_API_KEY in backend/.env")
     return Anthropic(api_key=api_key)
 
 

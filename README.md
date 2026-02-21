@@ -26,7 +26,7 @@ npm install
 npm run dev
 ```
 
-Set `CURSOR_COMPOSER_1_5_API_KEY` in `backend/.env` (or `ANTHROPIC_API_KEY` as fallback). The frontend proxies `/api/*` to the backend (see `next.config.js`).
+Set `CURSOR_COMPOSER_1_5_API_KEY` in `backend/.env`. The frontend proxies `/api/*` to the backend (see `next.config.js`).
 
 ## Agents
 
@@ -57,8 +57,10 @@ Set `CURSOR_COMPOSER_1_5_API_KEY` in `backend/.env` (or `ANTHROPIC_API_KEY` as f
 | §7 Safety / guardrails | `backend/app/prompts/safety.py`; appended to all agents in `agents/invoke.py` |
 | §8 Tech stack | This repo (LangGraph, FastAPI, Next.js 14) |
 
+## Troubleshooting
+
+**Frontend 404 on port 3001** — If you see "too many open files" in the dev server and routes return 404, the file watcher can fail to pick up the `app/` directory. Fixes: (1) Restart dev after clearing cache: `rm -rf frontend/.next && npm run dev`. (2) Or run the production server: `npm run build && npm run start` (then open the port shown, e.g. 3000 unless you use `-p 3001`).
+
 ## License
 
 Confidential — February 2026.
-# ProjectAria
-# ProjectAria

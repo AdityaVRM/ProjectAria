@@ -55,7 +55,7 @@ def chat(req: ChatRequest) -> dict:
         )
         return {"response": response_text, "user_id": req.user_id}
     except ValueError as e:
-        if "API key" in str(e) or "CURSOR_COMPOSER" in str(e) or "ANTHROPIC" in str(e):
+        if "API key" in str(e) or "CURSOR_COMPOSER" in str(e):
             raise HTTPException(status_code=503, detail="LLM not configured")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
