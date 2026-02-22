@@ -1,15 +1,16 @@
-"""In-memory and persistent store for business snapshots (MEMORY_AGENT backend)."""
+"""In-memory store for business snapshots (MEMORY_AGENT backend)."""
 from datetime import datetime, timezone
 from typing import Optional
+
+from pydantic import BaseModel
+
 from app.schemas import BusinessSnapshot
 
-# In-memory store (per process). Replace with DB/vector store for production.
-_store: dict[str, BusinessSnapshot] = {}
 _store_instance: Optional["MemoryStore"] = None
 
 
 class MemoryStore:
-    def __init__(self):
+    def __init__(self) -> None:
         self._data: dict[str, BusinessSnapshot] = {}
 
     def get(self, user_id: str) -> Optional[BusinessSnapshot]:
@@ -22,12 +23,16 @@ class MemoryStore:
 
     def merge(self, user_id: str, updates: dict) -> BusinessSnapshot:
         existing = self.get(user_id)
-        if existing is None:
-            base = BusinessSnapshot(user_id=user_id)
-        else:
-            base = existing.model_copy(deep=True)
+        base = existing.model_copy(deep=True) if existing else BusinessSnapshot(user_id=user_id)
         for key, value in updates.items():
-            if hasattr(base, key) and value is not None:
+            if not hasattr(base, key) or value is None:
+                continue
+            current = getattr(base, key)
+            if isinstance(current, BaseModel) and isinstance(value, dict):
+                for sub_k, sub_v in value.items():
+                    if hasattr(current, sub_k) and sub_v is not None:
+                        setattr(current, sub_k, sub_v)
+            else:
                 setattr(base, key, value)
         base.last_updated = datetime.now(timezone.utc).isoformat()
         self.set(user_id, base)

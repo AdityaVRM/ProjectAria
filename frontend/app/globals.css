@@ -8,6 +8,7 @@
   --accent-dim: #7c3aed;
   --success: #34d399;
   --warning: #fbbf24;
+  --error: #f87171;
   --font-sans: 'DM Sans', system-ui, sans-serif;
 }
 
@@ -41,4 +42,13 @@ button {
 
 input, textarea {
   font-family: inherit;
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: white;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

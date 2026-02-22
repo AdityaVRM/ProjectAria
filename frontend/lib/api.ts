@@ -33,6 +33,45 @@ export interface BusinessSnapshot {
   capacity_hours_per_week: string;
 }
 
+export interface AgentResult {
+  agent_name: string;
+  status: 'completed' | 'error' | 'running' | 'iterating';
+  output: Record<string, unknown>;
+  summary: string;
+  iteration: number;
+}
+
+export interface RunRequest {
+  message: string;
+  user_id: string;
+}
+
+export interface RunResponse {
+  intent: string;
+  is_new_user: boolean;
+  synthesis: string;
+  agent_results: AgentResult[];
+  onboarding: boolean;
+  agent_plan: string[][];
+}
+
+export interface IterateRequest {
+  user_id: string;
+  agent_name: string;
+  feedback: string;
+  original_message?: string;
+  previous_output?: Record<string, unknown>;
+  iteration?: number;
+}
+
+export interface IterateResponse {
+  agent_name: string;
+  status: 'completed' | 'error';
+  output: Record<string, unknown>;
+  summary: string;
+  iteration: number;
+}
+
 export async function sendChat(req: ChatRequest): Promise<ChatResponse> {
   const res = await fetch(`${API}/chat`, {
     method: 'POST',
@@ -48,6 +87,32 @@ export async function sendChat(req: ChatRequest): Promise<ChatResponse> {
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(err.detail || 'Chat failed');
+  }
+  return res.json();
+}
+
+export async function runOrchestration(req: RunRequest): Promise<RunResponse> {
+  const res = await fetch(`${API}/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || 'Run failed');
+  }
+  return res.json();
+}
+
+export async function iterateAgent(req: IterateRequest): Promise<IterateResponse> {
+  const res = await fetch(`${API}/agent/iterate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || 'Iterate failed');
   }
   return res.json();
 }

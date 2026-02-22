@@ -1,7 +1,7 @@
 """Single LLM client — Google Gemini API only."""
 import json
 import re
-from typing import Any
+from typing import Any, Optional
 
 from google import genai
 from google.genai import types
@@ -9,6 +9,7 @@ from google.genai import types
 from app.config import get_settings
 
 _client_instance = None
+_PLACEHOLDER_KEYS = {"your_gemini_api_key_here", ""}
 
 
 def _client() -> genai.Client:
@@ -16,10 +17,10 @@ def _client() -> genai.Client:
     if _client_instance is None:
         settings = get_settings()
         api_key = (settings.gemini_api_key or "").strip()
-        if not api_key:
+        if not api_key or api_key in _PLACEHOLDER_KEYS:
             raise ValueError(
                 "No Gemini API key set. Set GEMINI_API_KEY in backend/.env "
-                "(get from https://aistudio.google.com/apikey)"
+                "(get one at https://aistudio.google.com/apikey)"
             )
         _client_instance = genai.Client(api_key=api_key)
     return _client_instance
@@ -29,9 +30,8 @@ def llm_invoke(
     system: str,
     user_message: str,
     max_tokens: int = 8192,
-    model: str | None = None,
+    model: Optional[str] = None,
 ) -> str:
-    """Returns assistant text via Gemini. Raises on API error."""
     settings = get_settings()
     model = model or settings.gemini_model
     client = _client()
@@ -46,13 +46,9 @@ def llm_invoke(
     return (response.text or "").strip()
 
 
-def extract_json_block(text: str) -> dict[str, Any] | None:
-    """Extract first JSON object from markdown code block or raw text."""
+def extract_json_block(text: str) -> Optional[dict[str, Any]]:
     m = re.search(r"```(?:json)?\s*([\s\S]*?)```", text)
-    if m:
-        raw = m.group(1).strip()
-    else:
-        raw = text.strip()
+    raw = m.group(1).strip() if m else text.strip()
     start = raw.find("{")
     if start == -1:
         return None

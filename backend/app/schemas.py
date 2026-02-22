@@ -1,9 +1,8 @@
-"""Shared Pydantic schemas for SoloOS — agent I/O and business context."""
-from typing import Any, Literal
+"""Shared Pydantic schemas for SoloOS."""
+from typing import Any, Literal, Optional
 from pydantic import BaseModel, Field
 
 
-# ----- Business Snapshot (MEMORY_AGENT) -----
 class AgentOutputsSummary(BaseModel):
     strategy: str = ""
     marketing: str = ""
@@ -34,18 +33,12 @@ class BusinessSnapshot(BaseModel):
     capacity_hours_per_week: str = ""
 
 
-# ----- Intent classification -----
 IntentType = Literal[
-    "NEW_IDEA",
-    "EXISTING_PROBLEM",
-    "TASK_REQUEST",
-    "PROGRESS_UPDATE",
-    "QUESTION",
-    "PIVOT",
+    "NEW_IDEA", "EXISTING_PROBLEM", "TASK_REQUEST",
+    "PROGRESS_UPDATE", "QUESTION", "PIVOT",
 ]
 
 
-# ----- Chat / API -----
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant", "system"]
     content: str
@@ -54,9 +47,23 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     message: str
     user_id: str
-    session_id: str | None = None
+    session_id: Optional[str] = None
     ui_context: Literal["chat", "dashboard", "agent_studio"] = "chat"
-    active_agent: str | None = None  # for Agent Studio
+    active_agent: Optional[str] = None
+
+
+class RunRequest(BaseModel):
+    message: str
+    user_id: str
+
+
+class IterateRequest(BaseModel):
+    user_id: str
+    agent_name: str
+    feedback: str
+    original_message: str = ""
+    previous_output: dict[str, Any] = Field(default_factory=dict)
+    iteration: int = 1
 
 
 class TaskItem(BaseModel):
@@ -76,7 +83,6 @@ class TaskAgentOutput(BaseModel):
     blocked_tasks: list[str] = Field(default_factory=list)
 
 
-# ----- Generic agent input/output (for orchestration) -----
 class AgentInput(BaseModel):
     business_context: str = ""
     extra: dict[str, Any] = Field(default_factory=dict)
